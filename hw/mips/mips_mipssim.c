@@ -27,6 +27,7 @@
 #include "hw/hw.h"
 #include "hw/mips/mips.h"
 #include "hw/mips/cpudevs.h"
+#include "hw/block/flash.h"
 #include "hw/char/serial.h"
 #include "hw/isa/isa.h"
 #include "net/net.h"
@@ -149,6 +150,7 @@ mips_mipssim_init(MachineState *machine)
     CPUMIPSState *env;
     ResetData *reset_info;
     int bios_size;
+    DriveInfo *dinfo;
 
     /* Init CPUs. */
     if (cpu_model == NULL) {
@@ -229,6 +231,20 @@ mips_mipssim_init(MachineState *machine)
     if (nd_table[0].used)
         /* MIPSnet uses the MIPS CPU INT0, which is interrupt 2. */
         mipsnet_init(0x4200, env->irq[2], &nd_table[0]);
+
+    dinfo = drive_get(IF_PFLASH, 0, 0);
+
+    thumips_flash_init(0x1E000000, 64*1024*1024/8 * 2, "../linux-naivemips/vmlinux");
+
+    /*
+    if (dinfo != NULL) {
+        if (!pflash_cfi01_register(0x1E000000, NULL, "thinpad.flash", 64*1024*1024/8,
+            blk_by_legacy_dinfo(dinfo), 
+            1024*1024/8, 64, 2, 0x11, 0x22,0x33,0x44,0 )) {
+            fprintf(stderr, "qemu: Error registering flash memory.\n");
+        }
+    }
+    */
 }
 
 static void mips_mipssim_machine_init(MachineClass *mc)
