@@ -5073,9 +5073,11 @@ static void gen_mfc0(DisasContext *ctx, TCGv arg, int reg, int sel)
     case 4:
         switch (sel) {
         case 0:
+            fprintf(stderr, "qemu-mips: CP0: Read Context: pc=%08x\n", ctx->pc);
             tcg_gen_ld_tl(arg, cpu_env, offsetof(CPUMIPSState, CP0_Context));
             tcg_gen_ext32s_tl(arg, arg);
             rn = "Context";
+            fprintf(stderr, "qemu-mips: CP0: Read Context: read %08x\n", GET_TCGV_I32(arg));
             break;
         case 1:
 //            gen_helper_mfc0_contextconfig(arg); /* SmartMIPS ASE */
@@ -5095,7 +5097,10 @@ static void gen_mfc0(DisasContext *ctx, TCGv arg, int reg, int sel)
     case 5:
         switch (sel) {
         case 0:
+            fprintf(stderr, "qemu-mips: CP0: read PageMask: pc=%08x\n", ctx->pc);
+#if 0
             gen_mfc0_load32(arg, offsetof(CPUMIPSState, CP0_PageMask));
+#endif
             rn = "PageMask";
             break;
         case 1:
@@ -5696,6 +5701,7 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
         switch (sel) {
         case 0:
             gen_helper_mtc0_context(cpu_env, arg);
+            fprintf(stderr, "qemu-mips: CP0: write Context: pc=%08x\n", ctx->pc);
             rn = "Context";
             break;
         case 1:
@@ -5716,7 +5722,10 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
     case 5:
         switch (sel) {
         case 0:
+//#if 0
             gen_helper_mtc0_pagemask(cpu_env, arg);
+//#endif
+            fprintf(stderr, "qemu-mips: CP0: write pagemask: pc=%08x, arg=%08x, ignored\n", ctx->pc, arg);
             rn = "PageMask";
             break;
         case 1:
@@ -5809,6 +5818,7 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
         switch (sel) {
         case 0:
             gen_helper_mtc0_entryhi(cpu_env, arg);
+            fprintf(stderr, "qemu-mips: CP0: write to entryhi, pc=%08x\n", ctx->pc);
             rn = "EntryHi";
             break;
         default:
@@ -7903,6 +7913,7 @@ static void gen_cp0 (CPUMIPSState *env, DisasContext *ctx, uint32_t opc, int rt,
         opn = "dmtc0";
         break;
 #endif
+#if 0
     case OPC_MFHC0:
         check_mvh(ctx);
         if (rt == 0) {
@@ -7938,12 +7949,14 @@ static void gen_cp0 (CPUMIPSState *env, DisasContext *ctx, uint32_t opc, int rt,
                  ctx->opcode & 0x7, (ctx->opcode >> 4) & 1);
         opn = "mttr";
         break;
+#endif
     case OPC_TLBWI:
         opn = "tlbwi";
         if (!env->tlb->helper_tlbwi)
             goto die;
         gen_helper_tlbwi(cpu_env);
         break;
+#if 0
     case OPC_TLBINV:
         opn = "tlbinv";
         if (ctx->ie >= 2) {
@@ -7962,24 +7975,30 @@ static void gen_cp0 (CPUMIPSState *env, DisasContext *ctx, uint32_t opc, int rt,
             gen_helper_tlbinvf(cpu_env);
         } /* treat as nop if TLBINV not supported */
         break;
+#endif
+#if 0
     case OPC_TLBWR:
         opn = "tlbwr";
+        fprintf(stderr, "qemu-mips: tlbwr called: at pc=%08x\n", ctx->pc);
         if (!env->tlb->helper_tlbwr)
             goto die;
         gen_helper_tlbwr(cpu_env);
         break;
+#endif
     case OPC_TLBP:
         opn = "tlbp";
         if (!env->tlb->helper_tlbp)
             goto die;
         gen_helper_tlbp(cpu_env);
         break;
+#if 0
     case OPC_TLBR:
         opn = "tlbr";
         if (!env->tlb->helper_tlbr)
             goto die;
         gen_helper_tlbr(cpu_env);
         break;
+#endif
     case OPC_ERET: /* OPC_ERETNC */
         if ((ctx->insn_flags & ISA_MIPS32R6) &&
             (ctx->hflags & MIPS_HFLAG_BMASK)) {
@@ -8000,6 +8019,7 @@ static void gen_cp0 (CPUMIPSState *env, DisasContext *ctx, uint32_t opc, int rt,
             ctx->bstate = BS_EXCP;
         }
         break;
+#if 0
     case OPC_DERET:
         opn = "deret";
         check_insn(ctx, ISA_MIPS32);
@@ -8015,6 +8035,7 @@ static void gen_cp0 (CPUMIPSState *env, DisasContext *ctx, uint32_t opc, int rt,
             ctx->bstate = BS_EXCP;
         }
         break;
+#endif
     case OPC_WAIT:
         opn = "wait";
         check_insn(ctx, ISA_MIPS3 | ISA_MIPS32);

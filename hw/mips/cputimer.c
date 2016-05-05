@@ -46,7 +46,6 @@ uint32_t cpu_mips_get_random (CPUMIPSState *env)
         seed = 1103515245 * seed + 12345;
         idx = (seed >> 16) % nb_rand_tlb + env->CP0_Wired;
     } while (idx == prev_idx);
-    prev_idx = idx;
     return idx;
 }
 
