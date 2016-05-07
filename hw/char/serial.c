@@ -300,7 +300,7 @@ static void serial_write_fcr(SerialState *s, uint8_t val)
     }
 }
 
-static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
+static void serial_ioport_write_8250(void *opaque, hwaddr addr, uint64_t val,
                                 unsigned size)
 {
     SerialState *s = opaque;
@@ -448,7 +448,21 @@ static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
     }
 }
 
-static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size)
+static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
+                                unsigned size){
+    addr &= 0xf;
+    DPRINTF("write-hack addr=0x%" HWADDR_PRIx " val=0x%" PRIx64 "\n", addr, val);
+    switch (addr) {
+      case 8:
+        serial_ioport_write_8250(opaque, 0, val & 0xff, 1);
+        break;
+      default:
+        break;
+    }
+
+}
+
+static uint64_t serial_ioport_read_8250(void *opaque, hwaddr addr, unsigned size)
 {
     SerialState *s = opaque;
     uint32_t ret;
@@ -531,6 +545,26 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size)
         break;
     }
     DPRINTF("read addr=0x%" HWADDR_PRIx " val=0x%02x\n", addr, ret);
+    return ret;
+}
+
+static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size){
+    addr &= 0xf;
+    uint64_t ret = 0;
+    switch (addr) {
+      case 0x8:
+        ret = serial_ioport_read_8250(opaque, 0x0, 1);
+        break;
+      case 0xc:
+        {
+          uint64_t lsr = serial_ioport_read_8250(opaque, 0x5, 1);
+          ret = (!!(lsr & UART_LSR_DR)) * 2 + (!!(lsr & UART_LSR_THRE)) * 1;
+        }
+        break;
+      default:
+        break;
+    }
+    DPRINTF("read-hack addr=0x%" HWADDR_PRIx " val=0x%02x\n", addr, ret);
     return ret;
 }
 
@@ -903,7 +937,7 @@ SerialState *serial_init(int base, qemu_irq irq, int baudbase,
 
     vmstate_register(NULL, base, &vmstate_serial, s);
 
-    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial", 8);
+    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial", 0x10);
     memory_region_add_subregion(system_io, base, &s->io);
 
     return s;
@@ -966,7 +1000,7 @@ SerialState *serial_mm_init(MemoryRegion *address_space,
     vmstate_register(NULL, base, &vmstate_serial, s);
 
     memory_region_init_io(&s->io, NULL, &serial_mm_ops[end], s,
-                          "serial", 8 << it_shift);
+                          "serial", 0x10 << it_shift);
     memory_region_add_subregion(address_space, base, &s->io);
     return s;
 }
