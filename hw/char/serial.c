@@ -29,7 +29,7 @@
 #include "exec/address-spaces.h"
 #include "qemu/error-report.h"
 
-//#define DEBUG_SERIAL
+#define DEBUG_SERIAL
 
 #define UART_LCR_DLAB	0x80	/* Divisor latch access bit */
 
@@ -841,7 +841,7 @@ const VMStateDescription vmstate_serial = {
     }
 };
 
-static void serial_reset(void *opaque)
+static void serial_reset_8250(void *opaque)
 {
     SerialState *s = opaque;
 
@@ -874,6 +874,11 @@ static void serial_reset(void *opaque)
 
     serial_update_msl(s);
     s->msr &= ~UART_MSR_ANY_DELTA;
+}
+
+static void serial_reset(void *opaque){
+  serial_reset_8250(opaque);
+  serial_ioport_write_8250(opaque, 1, UART_IER_RDI, 1);
 }
 
 void serial_realize_core(SerialState *s, Error **errp)
