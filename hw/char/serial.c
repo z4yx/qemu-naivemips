@@ -29,7 +29,7 @@
 #include "exec/address-spaces.h"
 #include "qemu/error-report.h"
 
-#define DEBUG_SERIAL
+//#define DEBUG_SERIAL
 
 #define UART_LCR_DLAB	0x80	/* Divisor latch access bit */
 
