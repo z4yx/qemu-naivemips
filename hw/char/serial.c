@@ -891,7 +891,7 @@ static void serial_reset_8250(void *opaque)
 
 static void serial_reset(void *opaque){
   serial_reset_8250(opaque);
-  serial_ioport_write_8250(opaque, 1, UART_IER_RDI, 1);
+    //serial_ioport_write_8250(opaque, 1, UART_IER_RDI, 1);
 }
 
 void serial_realize_core(SerialState *s, Error **errp)
