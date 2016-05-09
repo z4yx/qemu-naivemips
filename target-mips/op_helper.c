@@ -1383,7 +1383,7 @@ void helper_mtc0_count(CPUMIPSState *env, target_ulong arg1)
 void helper_mtc0_entryhi(CPUMIPSState *env, target_ulong arg1)
 {
     target_ulong old, val, mask;
-    fprintf(stderr, "qemu-mips: helper_mtc0_entryhi: wrote VPN2=%05x, VPN2X=%d, ASID=%02x\n", ((arg1 >> 13) & 0x7ffff), ((arg1 >> 11) & 0x3 ), (arg1 & 0xff));
+    // fprintf(stderr, "qemu-mips: helper_mtc0_entryhi: wrote VPN2=%05x, VPN2X=%d, ASID=%02x\n", ((arg1 >> 13) & 0x7ffff), ((arg1 >> 11) & 0x3 ), (arg1 & 0xff));
     mask = (TARGET_PAGE_MASK << 1) | 0xFF;
     if (((env->CP0_Config4 >> CP0C4_IE) & 0x3) >= 2) {
         mask |= 1 << CP0EnHi_EHINV;

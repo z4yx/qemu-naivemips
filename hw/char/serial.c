@@ -448,20 +448,6 @@ static void serial_ioport_write_8250(void *opaque, hwaddr addr, uint64_t val,
     }
 }
 
-static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
-                                unsigned size){
-    addr &= 0xf;
-    DPRINTF("write-hack addr=0x%" HWADDR_PRIx " val=0x%" PRIx64 "\n", addr, val);
-    switch (addr) {
-      case 8:
-        serial_ioport_write_8250(opaque, 0, val & 0xff, 1);
-        break;
-      default:
-        break;
-    }
-
-}
-
 static uint64_t serial_ioport_read_8250(void *opaque, hwaddr addr, unsigned size)
 {
     SerialState *s = opaque;
@@ -558,7 +544,10 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size){
       case 0xc:
         {
           uint64_t lsr = serial_ioport_read_8250(opaque, 0x5, 1);
+          uint64_t ier = serial_ioport_read_8250(opaque, 0x1, 1);
           ret = (!!(lsr & UART_LSR_DR)) * 2 + (!!(lsr & UART_LSR_THRE)) * 1;
+          ret |= ((!!(ier & UART_IER_THRI)) << 3) + ((!!(ier & UART_IER_RDI)) << 4);
+          // fprintf(stderr, "%s R-SR:0x%x\n", __func__, ret);
         }
         break;
       default:
@@ -566,6 +555,30 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size){
     }
     DPRINTF("read-hack addr=0x%" HWADDR_PRIx " val=0x%02x\n", addr, ret);
     return ret;
+}
+
+static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
+                                unsigned size){
+    addr &= 0xf;
+    DPRINTF("write-hack addr=0x%" HWADDR_PRIx " val=0x%" PRIx64 "\n", addr, val);
+    switch (addr) {
+      case 8:
+        serial_ioport_write_8250(opaque, 0, val & 0xff, 1);
+        break;
+      case 0xc:
+        {
+            fprintf(stderr, "%s W-SR:0x%llx\n", __func__, val);
+            uint64_t t = serial_ioport_read_8250(opaque, 1, 1);
+            t &= ~(UART_IER_RDI|UART_IER_THRI);
+            t |= ((!!(val & (1<<3))) << UART_IER_THRI);
+            t |= ((!!(val & (1<<4))) << UART_IER_RDI);
+            serial_ioport_write_8250(opaque, 1, t & 0xff, 1);
+        }
+        break;
+      default:
+        break;
+    }
+
 }
 
 static int serial_can_receive(SerialState *s)
