@@ -547,7 +547,7 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size){
           uint64_t ier = serial_ioport_read_8250(opaque, 0x1, 1);
           ret = (!!(lsr & UART_LSR_DR)) * 2 + (!!(lsr & UART_LSR_THRE)) * 1;
           ret |= ((!!(ier & UART_IER_THRI)) << 3) + ((!!(ier & UART_IER_RDI)) << 4);
-          // fprintf(stderr, "%s R-SR:0x%x\n", __func__, ret);
+          //fprintf(stderr, "%s R-SR:0x%x\n", __func__, ret);
         }
         break;
       default:
@@ -570,8 +570,8 @@ static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
             fprintf(stderr, "%s W-SR:0x%llx\n", __func__, val);
             uint64_t t = serial_ioport_read_8250(opaque, 1, 1);
             t &= ~(UART_IER_RDI|UART_IER_THRI);
-            t |= ((!!(val & (1<<3))) << UART_IER_THRI);
-            t |= ((!!(val & (1<<4))) << UART_IER_RDI);
+            t |= ((!!(val & (1<<3))) * UART_IER_THRI);
+            t |= ((!!(val & (1<<4))) * UART_IER_RDI);
             serial_ioport_write_8250(opaque, 1, t & 0xff, 1);
         }
         break;
