@@ -5073,11 +5073,11 @@ static void gen_mfc0(DisasContext *ctx, TCGv arg, int reg, int sel)
     case 4:
         switch (sel) {
         case 0:
-            fprintf(stderr, "qemu-mips: CP0: Read Context: pc=%08x\n", ctx->pc);
+            //fprintf(stderr, "qemu-mips: CP0: Read Context: pc=%08x\n", ctx->pc);
             tcg_gen_ld_tl(arg, cpu_env, offsetof(CPUMIPSState, CP0_Context));
             tcg_gen_ext32s_tl(arg, arg);
             rn = "Context";
-            fprintf(stderr, "qemu-mips: CP0: Read Context: read %08x\n", GET_TCGV_I32(arg));
+            //fprintf(stderr, "qemu-mips: CP0: Read Context: read %08x\n", GET_TCGV_I32(arg));
             break;
         case 1:
 //            gen_helper_mfc0_contextconfig(arg); /* SmartMIPS ASE */
@@ -5097,7 +5097,7 @@ static void gen_mfc0(DisasContext *ctx, TCGv arg, int reg, int sel)
     case 5:
         switch (sel) {
         case 0:
-            fprintf(stderr, "qemu-mips: CP0: read PageMask: pc=%08x\n", ctx->pc);
+            //fprintf(stderr, "qemu-mips: CP0: read PageMask: pc=%08x\n", ctx->pc);
 #if 0
             gen_mfc0_load32(arg, offsetof(CPUMIPSState, CP0_PageMask));
 #endif
@@ -5701,7 +5701,7 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
         switch (sel) {
         case 0:
             gen_helper_mtc0_context(cpu_env, arg);
-            fprintf(stderr, "qemu-mips: CP0: write Context: pc=%08x\n", ctx->pc);
+            //fprintf(stderr, "qemu-mips: CP0: write Context: pc=%08x\n", ctx->pc);
             rn = "Context";
             break;
         case 1:
@@ -5725,7 +5725,7 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
 //#if 0
             gen_helper_mtc0_pagemask(cpu_env, arg);
 //#endif
-            fprintf(stderr, "qemu-mips: CP0: write pagemask: pc=%08x, arg=%08x, ignored\n", ctx->pc, arg);
+            //fprintf(stderr, "qemu-mips: CP0: write pagemask: pc=%08x, arg=%08x, ignored\n", ctx->pc, arg);
             rn = "PageMask";
             break;
         case 1:
@@ -5818,7 +5818,7 @@ static void gen_mtc0(DisasContext *ctx, TCGv arg, int reg, int sel)
         switch (sel) {
         case 0:
             gen_helper_mtc0_entryhi(cpu_env, arg);
-            fprintf(stderr, "qemu-mips: CP0: write to entryhi, pc=%08x\n", ctx->pc);
+            //fprintf(stderr, "qemu-mips: CP0: write to entryhi, pc=%08x\n", ctx->pc);
             rn = "EntryHi";
             break;
         default:

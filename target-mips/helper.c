@@ -478,18 +478,18 @@ void mips_cpu_do_interrupt(CPUState *cs)
     int cause = -1;
     const char *name;
 
-    if (qemu_loglevel_mask(CPU_LOG_INT)
-        && cs->exception_index != EXCP_EXT_INTERRUPT) {
+//    if (qemu_loglevel_mask(CPU_LOG_INT)
+//        && cs->exception_index != EXCP_EXT_INTERRUPT) {
         if (cs->exception_index < 0 || cs->exception_index > EXCP_LAST) {
             name = "unknown";
         } else {
             name = excp_names[cs->exception_index];
         }
 
-        qemu_log("%s enter: PC " TARGET_FMT_lx " EPC " TARGET_FMT_lx
+        fprintf(stderr, "\033[1;31m%s\033[0m enter: PC " TARGET_FMT_lx " EPC " TARGET_FMT_lx
                  " %s exception\n",
                  __func__, env->active_tc.PC, env->CP0_EPC, name);
-    }
+//    }
     if (cs->exception_index == EXCP_EXT_INTERRUPT &&
         (env->hflags & MIPS_HFLAG_DM)) {
         cs->exception_index = EXCP_DINT;

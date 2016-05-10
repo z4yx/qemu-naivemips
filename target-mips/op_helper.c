@@ -1290,7 +1290,7 @@ void helper_dmtc0_entrylo1(CPUMIPSState *env, uint64_t arg1)
 void helper_mtc0_context(CPUMIPSState *env, target_ulong arg1)
 {
     env->CP0_Context = (env->CP0_Context & 0x007FFFFF) | (arg1 & ~0x007FFFFF);
-    fprintf(stderr, "qemu-mips: helper_mtc0_context: mtc0_context: wrote: %08x\n", arg1);
+    fprintf(stderr, "qemu-mips: \033[1;31m%s\033[0m: mtc0_context: wrote: %08x\n", __func__ , arg1);
 }
 
 void helper_mtc0_pagemask(CPUMIPSState *env, target_ulong arg1)
@@ -1302,7 +1302,7 @@ void helper_mtc0_pagemask(CPUMIPSState *env, target_ulong arg1)
          mask == 0x0FFF || mask == 0x3FFF || mask == 0xFFFF)) {
         env->CP0_PageMask = arg1 & (0x1FFFFFFF & (TARGET_PAGE_MASK << 1));
     }
-    fprintf(stderr, "qemu-mips: helper_mtc0_pagemask: mtc0_pagemask: wrote: %08x\n", arg1);
+    //fprintf(stderr, "qemu-mips: helper_mtc0_pagemask: mtc0_pagemask: wrote: %08x\n", arg1);
 }
 
 void helper_mtc0_pagegrain(CPUMIPSState *env, target_ulong arg1)
@@ -1383,7 +1383,7 @@ void helper_mtc0_count(CPUMIPSState *env, target_ulong arg1)
 void helper_mtc0_entryhi(CPUMIPSState *env, target_ulong arg1)
 {
     target_ulong old, val, mask;
-    // fprintf(stderr, "qemu-mips: helper_mtc0_entryhi: wrote VPN2=%05x, VPN2X=%d, ASID=%02x\n", ((arg1 >> 13) & 0x7ffff), ((arg1 >> 11) & 0x3 ), (arg1 & 0xff));
+    fprintf(stderr, "qemu-mips: \033[1;31m%s\033[0m: wrote VPN2=%05x, VPN2X=%d, ASID=%02x\n", __func__, ((arg1 >> 13) & 0x7ffff), ((arg1 >> 11) & 0x3 ), (arg1 & 0xff));
     mask = (TARGET_PAGE_MASK << 1) | 0xFF;
     if (((env->CP0_Config4 >> CP0C4_IE) & 0x3) >= 2) {
         mask |= 1 << CP0EnHi_EHINV;

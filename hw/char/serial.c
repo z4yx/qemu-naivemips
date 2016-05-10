@@ -567,7 +567,7 @@ static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
         break;
       case 0xc:
         {
-            fprintf(stderr, "%s W-SR:0x%llx\n", __func__, val);
+            //fprintf(stderr, "%s W-SR:0x%llx\n", __func__, val);
             uint64_t t = serial_ioport_read_8250(opaque, 1, 1);
             t &= ~(UART_IER_RDI|UART_IER_THRI);
             t |= ((!!(val & (1<<3))) * UART_IER_THRI);
