@@ -29,7 +29,7 @@
 #include "exec/address-spaces.h"
 #include "qemu/error-report.h"
 
-//#define DEBUG_SERIAL
+#define DEBUG_SERIAL
 
 #define UART_LCR_DLAB	0x80	/* Divisor latch access bit */
 
@@ -137,10 +137,12 @@ static void serial_update_irq(SerialState *s)
     }
 
     s->iir = tmp_iir | (s->iir & 0xF0);
-
+  
     if (tmp_iir != UART_IIR_NO_INT) {
+        DPRINTF("raise irq\n");
         qemu_irq_raise(s->irq);
     } else {
+        DPRINTF("lower irq\n");
         qemu_irq_lower(s->irq);
     }
 }
@@ -905,7 +907,7 @@ SerialState *serial_init(int base, qemu_irq irq, int baudbase,
 
     vmstate_register(NULL, base, &vmstate_serial, s);
 
-    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial", 8);
+    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial", 8 * 4);
     memory_region_add_subregion(system_io, base, &s->io);
 
     return s;
