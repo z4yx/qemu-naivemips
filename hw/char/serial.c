@@ -305,6 +305,7 @@ static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
 {
     SerialState *s = opaque;
 
+    addr >>= 2;
     addr &= 7;
     DPRINTF("write addr=0x%" HWADDR_PRIx " val=0x%" PRIx64 "\n", addr, val);
     switch(addr) {
@@ -453,6 +454,7 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size)
     SerialState *s = opaque;
     uint32_t ret;
 
+    addr >>= 2;
     addr &= 7;
     switch(addr) {
     default:

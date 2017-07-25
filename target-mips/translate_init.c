@@ -108,6 +108,23 @@ struct mips_def_t {
 static const mips_def_t mips_defs[] =
 {
     {
+        .name = "naivepp",
+        .CP0_PRid = 0x00018000,
+        .CP0_Config0 = MIPS_CONFIG0 | (MMU_TYPE_R4000 << CP0C0_MT),
+        .CP0_Config1 = (15 << CP0C1_MMU) | (3 << CP0C1_IL) | (3 << CP0C1_DL),
+        .CP0_Config2 = 0,
+        .CP0_Config3 = 0,
+        .CP0_LLAddr_rw_bitmask = 0,
+        .CP0_LLAddr_shift = 4,
+        .SYNCI_Step = 32,
+        .CCRes = 2,
+        .CP0_Status_rw_bitmask = 0x1278FF17,
+        .SEGBITS = 32,
+        .PABITS = 32,
+        .insn_flags = CPU_MIPS32,
+        .mmu_type = MMU_TYPE_R4000,
+    },
+    {
         .name = "naive",
         .CP0_PRid = 0x00018000,
         .CP0_Config0 = MIPS_CONFIG0 | (MMU_TYPE_R4000 << CP0C0_MT),
