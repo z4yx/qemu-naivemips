@@ -29,7 +29,7 @@
 #include "exec/address-spaces.h"
 #include "qemu/error-report.h"
 
-#define DEBUG_SERIAL
+//#define DEBUG_SERIAL
 
 #define UART_LCR_DLAB	0x80	/* Divisor latch access bit */
 
@@ -306,7 +306,12 @@ static void serial_ioport_write(void *opaque, hwaddr addr, uint64_t val,
                                 unsigned size)
 {
     SerialState *s = opaque;
+    
+    //DPRINTF("write addr=0x%" HWADDR_PRIx " size=%u val=0x%" PRIx64 "\n", addr, size, val);
 
+    if( (addr & 0x3) != 0){
+        return;
+    }
     addr >>= 2;
     addr &= 7;
     DPRINTF("write addr=0x%" HWADDR_PRIx " val=0x%" PRIx64 "\n", addr, val);
@@ -456,6 +461,10 @@ static uint64_t serial_ioport_read(void *opaque, hwaddr addr, unsigned size)
     SerialState *s = opaque;
     uint32_t ret;
 
+    //DPRINTF("read addr=0x%" HWADDR_PRIx " size=%u\n", addr, size);
+    if( (addr & 0x3) != 0){
+        return 0;
+    }
     addr >>= 2;
     addr &= 7;
     switch(addr) {
@@ -907,7 +916,7 @@ SerialState *serial_init(int base, qemu_irq irq, int baudbase,
 
     vmstate_register(NULL, base, &vmstate_serial, s);
 
-    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial", 8 * 4);
+    memory_region_init_io(&s->io, NULL, &serial_io_ops, s, "serial",  8 * 4 );
     memory_region_add_subregion(system_io, base, &s->io);
 
     return s;
@@ -952,6 +961,7 @@ SerialState *serial_mm_init(MemoryRegion *address_space,
                             qemu_irq irq, int baudbase,
                             CharDriverState *chr, enum device_endian end)
 {
+    abort();
     SerialState *s;
     Error *err = NULL;
 
