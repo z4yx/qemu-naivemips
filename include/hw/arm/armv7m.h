@@ -99,6 +99,7 @@ struct ARMv7MState {
     bool start_powered_off;
     bool vfp;
     bool dsp;
+    bool bigend;
 };
 
 #endif

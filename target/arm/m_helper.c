@@ -228,8 +228,12 @@ static bool v7m_stack_write(ARMCPU *cpu, uint32_t addr, uint32_t value,
         }
         goto pend_fault;
     }
-    address_space_stl_le(arm_addressspace(cs, attrs), physaddr, value,
-                         attrs, &txres);
+    if (cpu->cfgend)
+        address_space_stl_be(arm_addressspace(cs, attrs), physaddr, value,
+                            attrs, &txres);
+    else
+        address_space_stl_le(arm_addressspace(cs, attrs), physaddr, value,
+                            attrs, &txres);
     if (txres != MEMTX_OK) {
         /* BusFault trying to write the data */
         if (mode == STACK_LAZYFP) {
@@ -308,8 +312,12 @@ static bool v7m_stack_read(ARMCPU *cpu, uint32_t *dest, uint32_t addr,
         goto pend_fault;
     }
 
-    value = address_space_ldl(arm_addressspace(cs, attrs), physaddr,
-                              attrs, &txres);
+    if (cpu->cfgend)
+        value = address_space_ldl_be(arm_addressspace(cs, attrs), physaddr,
+                                attrs, &txres);
+    else
+        value = address_space_ldl_le(arm_addressspace(cs, attrs), physaddr,
+                                attrs, &txres);
     if (txres != MEMTX_OK) {
         /* BusFault trying to read the data */
         qemu_log_mask(CPU_LOG_INT, "...BusFault with BFSR.UNSTKERR\n");
@@ -721,6 +729,9 @@ static bool arm_v7m_load_vector(ARMCPU *cpu, int exc, bool targets_secure,
          */
         exc_secure = !(cpu->env.v7m.aircr & R_V7M_AIRCR_BFHFNMINS_MASK);
         goto load_fail;
+    }
+    if (cpu->cfgend) {
+        vector_entry = bswap32(vector_entry);
     }
     *pvec = vector_entry;
     qemu_log_mask(CPU_LOG_INT, "...loaded new PC 0x%x\n", *pvec);

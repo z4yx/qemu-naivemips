@@ -9378,7 +9378,7 @@ static void arm_tr_init_disas_context(DisasContextBase *dcbase, CPUState *cs)
 
     if (arm_feature(env, ARM_FEATURE_M)) {
         dc->vfp_enabled = 1;
-        dc->be_data = MO_TE;
+        dc->be_data = cpu->cfgend ? MO_BE : MO_LE;
         dc->v7m_handler_mode = EX_TBFLAG_M32(tb_flags, HANDLER);
         dc->v8m_secure = arm_feature(env, ARM_FEATURE_M_SECURITY) &&
             regime_is_secure(env, dc->mmu_idx);

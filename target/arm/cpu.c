@@ -369,6 +369,11 @@ static void arm_cpu_reset(DeviceState *dev)
             initial_msp = ldl_phys(s->as, vecbase);
             initial_pc = ldl_phys(s->as, vecbase + 4);
         }
+        if (cpu->cfgend) {
+            initial_msp = bswap32(initial_msp);
+            initial_pc = bswap32(initial_pc);
+            // printf("msp %x pc %x\n", initial_msp, initial_pc);
+        }
 
         qemu_log_mask(CPU_LOG_INT,
                       "Loaded reset SP 0x%x PC 0x%x from vector table\n",

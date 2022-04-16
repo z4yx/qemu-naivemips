@@ -181,6 +181,8 @@ static MemTxResult v7m_systick_write(void *opaque, hwaddr addr,
     ARMv7MState *s = opaque;
     MemoryRegion *mr;
 
+    // if (s->bigend && size == 4) // PPB is always little endian when the CPU is big endian in ARMv6m
+    //     value = bswap32((uint32_t)value);
     /* Direct the access to the correct systick */
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(&s->systick[attrs.secure]), 0);
     return memory_region_dispatch_write(mr, addr, value,
@@ -330,6 +332,11 @@ static void armv7m_realize(DeviceState *dev, Error **errp)
     }
     if (object_property_find(OBJECT(s->cpu), "dsp")) {
         if (!object_property_set_bool(OBJECT(s->cpu), "dsp", s->dsp, errp)) {
+            return;
+        }
+    }
+    if (object_property_find(OBJECT(s->cpu), "cfgend")) {
+        if (!object_property_set_bool(OBJECT(s->cpu), "cfgend", s->bigend, errp)) {
             return;
         }
     }
@@ -530,6 +537,7 @@ static Property armv7m_properties[] = {
                      false),
     DEFINE_PROP_BOOL("vfp", ARMv7MState, vfp, true),
     DEFINE_PROP_BOOL("dsp", ARMv7MState, dsp, true),
+    DEFINE_PROP_BOOL("bigend", ARMv7MState, bigend, false),
     DEFINE_PROP_END_OF_LIST(),
 };
 

@@ -2342,6 +2342,8 @@ static MemTxResult nvic_sysreg_read(void *opaque, hwaddr addr,
     }
 
     trace_nvic_sysreg_read(addr, val, size);
+    if (s->cpu->cfgend && size == 4) // PPB is always little endian when the CPU is big endian in ARMv6m
+        val = bswap32((uint32_t)val);
     *data = val;
     return MEMTX_OK;
 }
@@ -2355,6 +2357,8 @@ static MemTxResult nvic_sysreg_write(void *opaque, hwaddr addr,
     unsigned i, startvec, end;
     unsigned setval = 0;
 
+    if (s->cpu->cfgend && size == 4) // PPB is always little endian when the CPU is big endian in ARMv6m
+        value = bswap32((uint32_t)value);
     trace_nvic_sysreg_write(addr, value, size);
 
     if (attrs.user && !nvic_user_access_ok(s, addr, attrs)) {
