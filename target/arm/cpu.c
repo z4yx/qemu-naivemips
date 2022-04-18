@@ -1865,7 +1865,7 @@ static void arm_cpu_realizefn(DeviceState *dev, Error **errp)
     }
 
     if (arm_feature(env, ARM_FEATURE_PMSA) &&
-        arm_feature(env, ARM_FEATURE_V7)) {
+        (arm_feature(env, ARM_FEATURE_V7) || arm_feature(env, ARM_FEATURE_V6))) {
         uint32_t nr = cpu->pmsav7_dregion;
 
         if (nr > 0xff) {
