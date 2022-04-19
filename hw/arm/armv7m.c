@@ -181,8 +181,8 @@ static MemTxResult v7m_systick_write(void *opaque, hwaddr addr,
     ARMv7MState *s = opaque;
     MemoryRegion *mr;
 
-    // if (s->bigend && size == 4) // PPB is always little endian when the CPU is big endian in ARMv6m
-    //     value = bswap32((uint32_t)value);
+    if (s->bigend && size == 4) // PPB is always little endian when an ARMv6m CPU is big endian
+        value = bswap32((uint32_t)value);
     /* Direct the access to the correct systick */
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(&s->systick[attrs.secure]), 0);
     return memory_region_dispatch_write(mr, addr, value,
@@ -195,11 +195,15 @@ static MemTxResult v7m_systick_read(void *opaque, hwaddr addr,
 {
     ARMv7MState *s = opaque;
     MemoryRegion *mr;
+    MemTxResult ret;
 
     /* Direct the access to the correct systick */
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(&s->systick[attrs.secure]), 0);
-    return memory_region_dispatch_read(mr, addr, data, size_memop(size) | MO_TE,
+    ret = memory_region_dispatch_read(mr, addr, data, size_memop(size) | MO_TE,
                                        attrs);
+    if (s->bigend && size == 4) // PPB is always little endian when an ARMv6m CPU is big endian
+        *data = bswap32((uint32_t)*data);
+    return ret;
 }
 
 static const MemoryRegionOps v7m_systick_ops = {
