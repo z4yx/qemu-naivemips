@@ -510,6 +510,15 @@ config NRF51_SOC
     select ARM_V7M
     select UNIMP
 
+config CANOKEY
+    bool
+    select CIU_SE
+
+config CIU_SE
+    bool
+    select ARM_V7M
+    select UNIMP
+
 config EMCRAFT_SF2
     bool
     select MSF2
