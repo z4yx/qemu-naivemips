@@ -66,11 +66,13 @@ struct CIUState {
     uint32_t sram_size;
     uint32_t flash_size;
 
-    uint8_t sysclk_sel;
-    uint8_t sysclk_div;
-    uint8_t nvm_key_state;
-    uint8_t nvm_nvm_eint;
-    uint8_t nvm_pagebuf[512];
+    uint8_t  sysclk_sel;
+    uint8_t  sysclk_div;
+    uint8_t  nvm_key_state;
+    uint8_t  nvm_nvm_eint;
+    uint8_t  nvm_pagebuf[512];
+    uint32_t nvm_op_addr;
+    void    *nvm_storage;
 
     MemoryRegion *board_memory;
     MemoryRegion container;
