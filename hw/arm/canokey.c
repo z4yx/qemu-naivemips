@@ -41,7 +41,7 @@ static void canokey_init(MachineState *machine)
     sysbus_realize(SYS_BUS_DEVICE(&s->ciu), &error_fatal);
 
     armv7m_load_kernel(ARM_CPU(first_cpu), machine->kernel_filename,
-                       s->ciu.flash_size);
+                       0x28000);
 }
 
 static void canokey_machine_class_init(ObjectClass *oc, void *data)
