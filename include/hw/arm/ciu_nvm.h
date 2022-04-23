@@ -12,7 +12,6 @@
 #define CIU_NVM_H
 
 #include "hw/sysbus.h"
-#include "hw/registerfields.h"
 #include "qom/object.h"
 
 #define TYPE_CIU_NVM "ciu.nvm"

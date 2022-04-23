@@ -6,16 +6,15 @@
  * This code is licensed under the GPL version 2 or later.  See
  * the COPYING file in the top-level directory.
  */
-#include "hw/misc/unimp.h"
-#include "hw/qdev-clock.h"
-#include "hw/qdev-properties-system.h"
-#include "hw/qdev-properties.h"
-#include "hw/sysbus.h"
-#include "migration/vmstate.h"
+#include "qemu/osdep.h"
 #include "qapi/error.h"
 #include "qemu/log.h"
 #include "qemu/module.h"
-#include "qemu/osdep.h"
+#include "hw/sysbus.h"
+#include "qom/object.h"
+#include "hw/qdev-properties-system.h"
+#include "hw/qdev-properties.h"
+#include "migration/vmstate.h"
 
 #include "hw/arm/ciu_nvm.h"
 
